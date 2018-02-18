@@ -8,8 +8,10 @@ v1.1.0
 # TODO : limite à 80 chars.
 
 import random
+import config_generic
 import config_question
 import gifts
+from game_saver import SavedInformations
 
 
 VERSION = (1, 1, 0)
@@ -76,6 +78,8 @@ def iterate_on_gift():
 
 def main():
 
+	saved_informations = SavedInformations()
+
 	# Suppression des doublons dans chaque catégorie de questions.
 	qas_all = {
 		qa_category: list(set(qas))
@@ -91,8 +95,7 @@ def main():
 
 	print('')
 	print('*' * 10)
-	# TODO : ajouter un fichier de config avec le prénom de la personne.
-	print("Coucou !")
+	print("Coucou %s !" % config_generic.PLAYER_NAME)
 	print("Bon courage pour ton entraînement.")
 	print("Pour indiquer tes réponses, indique le bon nombre puis appuies sur la touche Entrée.")
 	print('*' * 10)
@@ -143,14 +146,17 @@ def main():
 			else:
 				print("Passons à la question suivante.")
 
+		# TODO : deux fois le même code. C'est dégueu. (break, ou un truc du genre).
 		except FinishGameException:
 			print('')
 			print(get_current_status(current_score, end_game=True))
+			saved_informations.save()
 			print('Au revoir. À bientôt.')
 			raise SystemExit()
 
 	print("Tu as répondu à toutes les questions.")
 	print(get_current_status(current_score, end_game=True))
+	saved_informations.save()
 	print("TODO : le truc avec le super-bonus")
 
 
