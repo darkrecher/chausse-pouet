@@ -6,8 +6,9 @@ qas (questions_answers) : liste de tuple de deux éléments. La question, la ré
 
 # https://stackoverflow.com/questions/533905/get-the-cartesian-product-of-a-series-of-lists
 import itertools
+import collections
 
-qas_all = []
+qas_all = collections.defaultdict(lambda: [])
 
 # TODO : faudrait pouvoir définir des coefs pour chaque question.
 # Pour gérer le fait de mettre autant de multiplication que d'addition,
@@ -17,8 +18,8 @@ qas_all = []
 def decorator_add_in_qas_all(func_generate_qas):
 
 	def wrapper_add_in_qas_all(*args, **kwargs):
-		qas = func_generate_qas(*args, **kwargs)
-		qas_all.extend(qas)
+		qa_category, qas = func_generate_qas(*args, **kwargs)
+		qas_all[qa_category].extend(qas)
 
 	return wrapper_add_in_qas_all
 
@@ -40,7 +41,7 @@ def table_multiplication(nb, generate_reverse=True):
 	else:
 		questions_answers = table
 
-	return questions_answers
+	return 'table multiplication', questions_answers
 
 
 @decorator_add_in_qas_all
@@ -70,7 +71,7 @@ def table_addition(
 	else:
 		questions_answers = table
 
-	return questions_answers
+	return 'table addition', questions_answers
 
 
 @decorator_add_in_qas_all
@@ -101,22 +102,25 @@ def table_soustraction(
 	else:
 		questions_answers = table
 
-	return questions_answers
+	return 'table soustraction', questions_answers
 
 
 @decorator_add_in_qas_all
 def double_de(nb_min, nb_max):
 	nb_max += 1
-	return [
+	qas_double = [
 		('Le double de ' + str(value), value * 2)
 		for value in range(nb_min, nb_max)
 	]
+	return 'double/moitié', qas_double
 
 
 @decorator_add_in_qas_all
 def moitie_de(nb_min, nb_max):
 	nb_max += 1
-	return [
+	qas_half = [
 		('La moitié de ' + str(value), value // 2)
 		for value in range(nb_min + nb_min%2, nb_max, 2)
 	]
+	return 'double/moitié', qas_half
+

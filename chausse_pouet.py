@@ -2,14 +2,17 @@
 Programme qui pose des questions (maths, etc.) pour s'entraîner.
 Niveau CE1.
 
-v1.0.0
+v1.1.0
 """
+
+# TODO : limite à 80 chars.
 
 import random
 import config_question
 import gifts
 
 
+VERSION = (1, 1, 0)
 
 POINTS_FROM_NB_TRIES_MADE = {
 	1: 5,
@@ -73,7 +76,15 @@ def iterate_on_gift():
 
 def main():
 
-	qas_all = list(set(config_question.qas_all))
+	# Suppression des doublons dans chaque catégorie de questions.
+	qas_all = {
+		qa_category: list(set(qas))
+		for qa_category, qas in
+		config_question.qas_all.items()
+	}
+
+	qa_categories_deck = []
+
 	current_score = 0
 	next_step_gift = STEP_FOR_GIFT
 	gift_distributor = iterate_on_gift()
@@ -89,9 +100,27 @@ def main():
 
 	while qas_all:
 
-		qa_index = random.randint(1, len(qas_all)) - 1
-		question, answer = qas_all[qa_index]
-		del qas_all[qa_index]
+		# Suppression des catégories qui n'ont plus de question.
+		# TODO : bon c'est moche. Ce serait mieux si le distributeur de question était une classe séparée,
+		# avec un itérateur et tout.
+		qa_categories = list(qas_all.keys())
+		for qa_categ in qa_categories:
+			if not qas_all[qa_categ]:
+				del qas_all[qa_categ]
+
+		# Pour initialiser le deck de catégorie, on prend chaque catégorie en double.
+		# Ça permet d'avoir une répartition "équitable mais un peu random quand même", dans le choix des catégories.
+		# TODO : rendre ça configurable.
+		if not qa_categories_deck:
+			qa_categories_deck.extend(qa_categories)
+			qa_categories_deck.extend(qa_categories)
+			random.shuffle(qa_categories_deck)
+
+		qa_categ_selected = qa_categories_deck.pop(0)
+		len_qas_selected = len(qas_all[qa_categ_selected])
+		qa_index = random.randint(0, len_qas_selected-1)
+		question, answer = qas_all[qa_categ_selected][qa_index]
+		del qas_all[qa_categ_selected][qa_index]
 
 		try:
 			print('')
@@ -110,7 +139,6 @@ def main():
 					print(next(gift_distributor))
 					print('')
 					input("Appuie sur Entrée pour continuer le jeu.")
-
 
 			else:
 				print("Passons à la question suivante.")
