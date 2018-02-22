@@ -50,13 +50,15 @@ def fiikus_read_pokemon_asciis(path=PATH_FIIKUS_POKEMONS, pokemon_max=151):
 
 def fiikus_merge_pokemon(dict_names, dict_asciis):
 
-	poke_gifts = []
+	poke_gifts = {}
+	poke_valid_indexes = set(dict_names.keys()).intersection(dict_asciis.keys())
 
-	for poke_index, poke_ascii in dict_asciis.items():
-		poke_name = dict_names.get(poke_index)
-		if poke_name is not None:
-			poke_gift = "%s\n\nC'est le pokémon %s !!\n" % (poke_ascii, poke_name)
-			poke_gifts.append(poke_gift)
+	for poke_index in poke_valid_indexes:
+		poke_name = dict_names[poke_index]
+		poke_ascii = dict_asciis[poke_index]
+		poke_gift = "%s\n\nC'est le pokémon %s !!\n" % (poke_ascii, poke_name)
+		poke_key = 'fiikus_%s' % poke_index
+		poke_gifts[poke_key] = poke_gift
 
 	return poke_gifts
 

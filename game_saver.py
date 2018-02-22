@@ -20,6 +20,7 @@ class SavedInformations():
 
 		saved_infos = json.loads(str_saved_infos)
 		self.score = saved_infos['score']
+		# TODO : à renommer en "obtained_gifts", pour éviter de confusionner.
 		self.gifts = saved_infos['gifts']
 
 

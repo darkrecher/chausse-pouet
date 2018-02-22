@@ -47,14 +47,17 @@ def table_multiplication(nb, generate_reverse=True):
 @decorator_add_in_qas_all
 def table_addition(
 	operand_1_min, operand_1_max, operand_2_min, operand_2_max,
-	generate_reverse=True
+	generate_reverse=True, multiplicator=1, qa_category='table addition'
 ):
 
 	operand_1_max += 1
 	operand_2_max += 1
 
 	table = [
-		(str(operand_1) + ' + ' + str(operand_2), operand_1 + operand_2)
+		(
+			'%s + %s' % (operand_1 * multiplicator, operand_2 * multiplicator),
+			operand_1*multiplicator + operand_2*multiplicator
+		)
 		for operand_1, operand_2 in itertools.product(
 			range(operand_1_min, operand_1_max),
 			range(operand_2_min, operand_2_max))
@@ -62,7 +65,10 @@ def table_addition(
 
 	if generate_reverse:
 		table_reversed = [
-			(str(operand_2) + ' + ' + str(operand_1), operand_1 + operand_2)
+			(
+				'%s + %s' % (operand_2 * multiplicator, operand_1 * multiplicator),
+				operand_1*multiplicator + operand_2*multiplicator
+			)
 			for operand_1, operand_2 in itertools.product(
 				range(operand_1_min, operand_1_max),
 				range(operand_2_min, operand_2_max))
@@ -71,7 +77,7 @@ def table_addition(
 	else:
 		questions_answers = table
 
-	return 'table addition', questions_answers
+	return qa_category, questions_answers
 
 
 @decorator_add_in_qas_all
